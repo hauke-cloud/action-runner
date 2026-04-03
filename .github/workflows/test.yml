@@ -35,10 +35,10 @@ jobs:
             HELM_VERSION=3.15.0
             NODE_VERSION=20
 
-#      - name: Run Trivy vulnerability scanner (test)
-#        uses: aquasecurity/trivy-action@master
-#        with:
-#          image-ref: custom-actions-runner:test
-#          format: 'table'
-#          exit-code: '0'
-#          severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner (test)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: custom-actions-runner:test
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
