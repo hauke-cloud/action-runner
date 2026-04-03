@@ -1,0 +1,97 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": ["dependencies", "renovate"],
+  "schedule": ["before 6am on Monday"],
+  "timezone": "UTC",
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "packageRules": [
+    {
+      "description": "GitHub Actions Runner base image",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/actions/actions-runner"],
+      "groupName": "GitHub Actions Runner",
+      "automerge": false,
+      "labels": ["docker", "github-runner"],
+      "schedule": ["before 6am on Monday"]
+    },
+    {
+      "description": "Kubectl updates",
+      "matchFileNames": ["Dockerfile"],
+      "matchStrings": [
+        "ARG KUBECTL_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kubernetes/kubernetes",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "Helm updates",
+      "matchFileNames": ["Dockerfile"],
+      "matchStrings": [
+        "ARG HELM_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "helm/helm",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "Node.js updates",
+      "matchFileNames": ["Dockerfile"],
+      "matchStrings": [
+        "ARG NODE_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "node-version",
+      "depNameTemplate": "node",
+      "versioningTemplate": "node"
+    },
+    {
+      "description": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "automerge": true,
+      "automergeType": "pr",
+      "labels": ["github-actions"]
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "ARG RUNNER_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "actions/runner",
+      "versioningTemplate": "loose"
+    },
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "ARG KUBECTL_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kubernetes/kubernetes",
+      "versioningTemplate": "loose"
+    },
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "ARG HELM_VERSION=(?<currentValue>.*?)\\n"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "helm/helm",
+      "versioningTemplate": "loose"
+    }
+  ],
+  "docker": {
+    "enabled": true,
+    "pinDigests": false
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": false
+  }
+}

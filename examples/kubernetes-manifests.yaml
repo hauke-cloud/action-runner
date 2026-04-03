@@ -1,0 +1,91 @@
+# Example Kubernetes manifests for deploying with ARC
+
+## RunnerDeployment (ARC v1)
+
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: custom-runner-deployment
+  namespace: actions-runner-system
+spec:
+  replicas: 3
+  template:
+    spec:
+      repository: your-org/your-repo
+      image: ghcr.io/your-org/custom-actions-runner:latest
+      imagePullPolicy: Always
+      dockerdWithinRunnerContainer: true
+      resources:
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+      labels:
+        - custom-runner
+
+---
+# AutoscalingRunnerSet (ARC v2)
+
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingRunnerSet
+metadata:
+  name: custom-runner-set
+  namespace: arc-runners
+spec:
+  githubConfigUrl: https://github.com/your-org/your-repo
+  githubConfigSecret: github-token
+  minRunners: 1
+  maxRunners: 10
+  runnerScaleSetName: custom-runner-set
+  
+  template:
+    spec:
+      containers:
+      - name: runner
+        image: ghcr.io/your-org/custom-actions-runner:latest
+        imagePullPolicy: Always
+        command: ["/home/runner/run.sh"]
+        env:
+        - name: ACTIONS_RUNNER_CONTAINER_HOOKS
+          value: /home/runner/k8s/index.js
+        - name: ACTIONS_RUNNER_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        volumeMounts:
+        - name: work
+          mountPath: /home/runner/_work
+      volumes:
+      - name: work
+        emptyDir: {}
+
+---
+# AutoscalingListener (ARC v2)
+
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingListener
+metadata:
+  name: custom-runner-listener
+  namespace: arc-runners
+spec:
+  githubConfigUrl: https://github.com/your-org/your-repo
+  githubConfigSecret: github-token
+  runnerScaleSetId: 1
+  minRunners: 1
+  maxRunners: 10
+  
+  template:
+    spec:
+      containers:
+      - name: listener
+        image: ghcr.io/actions/actions-runner-controller:latest
+        imagePullPolicy: Always

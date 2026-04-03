@@ -1,0 +1,27 @@
+name: my-workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  example-job:
+    # Use the custom runner by specifying the label
+    runs-on: custom-runner
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Verify custom tools are available
+        run: |
+          echo "Checking installed tools..."
+          docker --version
+          kubectl version --client
+          helm version
+          node --version
+          python3 --version
+          
+      - name: Build and test
+        run: |
+          echo "Running your build and test commands..."
+          # Your commands here
