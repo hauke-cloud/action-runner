@@ -56,9 +56,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
 
 # Create tool cache directory structure for GitHub Actions
 RUN mkdir -p /__e/node${NODE_VERSION}/bin && \
-  ln -s /usr/bin/node /__e/node${NODE_VERSION}/bin/node && \
-  ln -s /usr/bin/npm /__e/node${NODE_VERSION}/bin/npm && \
-  ln -s /usr/bin/npx /__e/node${NODE_VERSION}/bin/npx
+  cp /usr/bin/node /__e/node${NODE_VERSION}/bin/node && \
+  cp /usr/bin/npm /__e/node${NODE_VERSION}/bin/npm && \
+  cp /usr/bin/npx /__e/node${NODE_VERSION}/bin/npx && \
+  chmod +x /__e/node${NODE_VERSION}/bin/*
 
 # Install Python and pip
 RUN apt-get update && apt-get install -y --no-install-recommends \
