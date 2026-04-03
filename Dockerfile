@@ -54,6 +54,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
   apt-get install -y nodejs && \
   rm -rf /var/lib/apt/lists/*
 
+# Create tool cache directory structure for GitHub Actions
+RUN mkdir -p /__e/node${NODE_VERSION}/bin && \
+  ln -s /usr/bin/node /__e/node${NODE_VERSION}/bin/node && \
+  ln -s /usr/bin/npm /__e/node${NODE_VERSION}/bin/npm && \
+  ln -s /usr/bin/npx /__e/node${NODE_VERSION}/bin/npx
+
 # Install Python and pip
 RUN apt-get update && apt-get install -y --no-install-recommends \
   python3 \
